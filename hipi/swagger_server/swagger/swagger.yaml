@@ -1,0 +1,268 @@
+openapi: 3.0.0
+info:
+  title: HiPS to multiresolution
+  description: |
+    This API allows you to consult sets of astronomic multiresolution
+    images such as those that Delight requires.
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /query_stamp:
+    get:
+      summary: Fits image
+      description: "Retrieve the requested astronomic image, centered in (ra,dec)\
+        \ and with dimensions (size x size)."
+      operationId: query_stamp_ra_dec_order_size_get
+      parameters:
+      - name: ra
+        in: query
+        description: Required right ascension (ra).
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 360
+          minimum: 0
+          type: number
+          format: float
+      - name: dec
+        in: query
+        description: Required declination (dec).
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 90
+          minimum: -30
+          type: number
+          format: float
+      - name: order
+        in: query
+        description: "HiPS order to use in image generation. Order 11: 0.25''/pixel.\
+          \  Order 10: 0.5''/pixel. Order 9: 1''/pixel. Order 8: 2''/pixel. Order\
+          \ 7: 4''/pixel."
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 11
+          minimum: 7
+          type: integer
+      - name: size
+        in: query
+        description: Size in pixels of the required image.
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 512
+          minimum: 15
+          type: integer
+      responses:
+        "200":
+          description: "OK!!"
+          content:
+            application/fits:
+              schema:
+                type: string
+                format: binary
+                x-content-type: application/fits
+            text/html:
+              schema:
+                type: string
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /query_multiresolution:
+    get:
+      summary: Set of 5 multiresolution images
+      description: recovers the set of multi-resolution images that DELIGHT requires.
+      operationId: query_multiresolution_ra_dec_get
+      parameters:
+      - name: ra
+        in: query
+        description: Required right ascension (ra).
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 360
+          minimum: 0
+          type: number
+          format: float
+      - name: dec
+        in: query
+        description: Required declination (dec).
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 90
+          minimum: -30
+          type: number
+          format: float
+      responses:
+        "200":
+          description: OK
+          content:
+            application/fits:
+              schema:
+                type: string
+                format: binary
+                x-content-type: application/fits
+        "204":
+          description: The object is not currently available.
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /query_objects:
+    get:
+      summary: Get a list of several sets of 5 multiresolution images
+      description: recovers multiple sets of multi-resolution images that DELIGHT
+        requires.
+      operationId: query_objects_ra_dec_get
+      parameters:
+      - name: filename
+        in: query
+        description: Name of the file that contains the coordinates.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/fits:
+              schema:
+                type: string
+                format: binary
+                x-content-type: application/fits
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: CSV file to multiresolution images
+      description: "Recovers multiple sets of multiresolution images that DELIGHT\
+        \ requires, using coordinates in a CSV file."
+      operationId: query_objects_ra_dec_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/query_objects_body'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/fits:
+              schema:
+                type: string
+                format: binary
+                x-content-type: application/fits
+        "400":
+          description: Bad request. Invalid CSV file.
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /query_delight:
+    get:
+      operationId: query_delight_ra_dec_get
+      parameters:
+      - name: ra
+        in: query
+        description: Required right ascension (ra).
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 360
+          minimum: 0
+          type: number
+          format: float
+      - name: dec
+        in: query
+        description: Required declination (dec).
+        required: true
+        style: form
+        explode: true
+        schema:
+          maximum: 90
+          minimum: -30
+          type: number
+          format: float
+      - name: host
+        in: query
+        description: Do you want the host size prediction?
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ra:
+                    type: number
+                  dec:
+                    type: number
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+
+
+components:
+  schemas:
+    query_objects_body:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+  parameters:
+    raParam:
+      name: ra
+      in: query
+      required: true
+      style: form
+      explode: true
+      schema:
+        maximum: 360
+        minimum: 0
+        type: number
+    decParam:
+      name: dec
+      in: query
+      required: true
+      style: form
+      explode: true
+      schema:
+        maximum: 90
+        minimum: -30
+        type: number
+    orderParam:
+      name: order
+      in: query
+      required: true
+      style: form
+      explode: true
+      schema:
+        maximum: 11
+        minimum: 7
+        type: integer
+    sizeParam:
+      name: size
+      in: query
+      required: true
+      style: form
+      explode: true
+      schema:
+        maximum: 512
+        minimum: 15
+        type: integer
+    titleParam:
+      name: filename
+      in: query
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+

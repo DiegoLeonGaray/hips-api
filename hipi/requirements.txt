@@ -1,0 +1,11 @@
+connexion>=2, <3
+connexion[swagger-ui]>=2, <3
+python_dateutil == 2.8.2
+setuptools >= 21.0.0
+swagger-ui-bundle >= 0.0.2
+numpy
+llvmlite
+numba
+healpy
+astropy
+pandas
