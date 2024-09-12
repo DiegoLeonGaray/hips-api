@@ -187,7 +187,7 @@ def query_stamp_ra_dec_order_size_get(ra, dec, order, size):  # noqa: E501
             as_attachment=True, download_name=title)
 
 
-def query_objects_ra_dec_get(filename):
+def query_objects_ra_dec_get(filename, gz=False):
     df = pd.read_csv(filename)
     temp_dir = '/tmp/fits_files'
     tar_path = '/tmp/fits_archive.tar.gz'
@@ -216,14 +216,25 @@ def query_objects_ra_dec_get(filename):
 
     inicio2 = time.time()
 
-    # Crear un archivo TAR a partir del directorio
-    with tarfile.open(tar_path, 'w') as tar:
-        tar.add(temp_dir, arcname=os.path.basename(temp_dir))
+    if(gz):
+        # Crear un archivo TAR a partir del directorio
+        with tarfile.open(tar_path, 'w:gz') as tar:
+            tar.add(temp_dir, arcname=os.path.basename(temp_dir))
 
-    print(f"TAR time: {time.time() - inicio2} seconds")
+        print(f"TAR time: {time.time() - inicio2} seconds")
         
-    # Servir el archivo TAR
-    response = send_file(tar_path, mimetype='application/x-tar', as_attachment=True, download_name='fits_files.tar.gz')
+        # Servir el archivo TAR
+        response = send_file(tar_path, mimetype='application/x-tar', as_attachment=True, download_name='fits_files.tar.gz')
+
+    else:
+        # Crear un archivo TAR a partir del directorio
+        with tarfile.open(tar_path, 'w') as tar:
+            tar.add(temp_dir, arcname=os.path.basename(temp_dir))
+
+        print(f"TAR time: {time.time() - inicio2} seconds")
+        
+        # Servir el archivo TAR
+        response = send_file(tar_path, mimetype='application/x-tar', as_attachment=True, download_name='fits_files.tar')
 
     shutil.rmtree(temp_dir)
     os.remove(tar_path)
@@ -231,7 +242,7 @@ def query_objects_ra_dec_get(filename):
     return response   
 
 
-def query_objects_ra_dec_post():
+def query_objects_ra_dec_post(gz=False):
     """Retrieve FITS files, store them in a directory, and compress the directory into a ZIP file."""
     df = pd.read_csv(request.files['file'])
 
@@ -262,14 +273,28 @@ def query_objects_ra_dec_post():
 
     inicio2 = time.time()
 
-    # Crear un archivo TAR a partir del directorio
-    with tarfile.open(tar_path, 'w') as tar:
-        tar.add(temp_dir, arcname=os.path.basename(temp_dir))
 
-    print(f"TAR time: {time.time() - inicio2} seconds")
+    if(gz):
+        # Crear un archivo TAR a partir del directorio
+        with tarfile.open(tar_path, 'w:gz') as tar:
+            tar.add(temp_dir, arcname=os.path.basename(temp_dir))
+
+        print(f"TAR time: {time.time() - inicio2} seconds")
         
-    # Servir el archivo TAR
-    response = send_file(tar_path, mimetype='application/x-tar', as_attachment=True, download_name='fits_files.tar.gz')
+        # Servir el archivo TAR
+        response = send_file(tar_path, mimetype='application/x-tar', as_attachment=True, download_name='fits_files.tar.gz')
+
+    else:
+        # Crear un archivo TAR a partir del directorio
+        with tarfile.open(tar_path, 'w') as tar:
+            tar.add(temp_dir, arcname=os.path.basename(temp_dir))
+
+        print(f"TAR time: {time.time() - inicio2} seconds")
+        
+        # Servir el archivo TAR
+        response = send_file(tar_path, mimetype='application/x-tar', as_attachment=True, download_name='fits_files.tar')
+
+    
 
     shutil.rmtree(temp_dir)
     os.remove(tar_path)
@@ -312,4 +337,5 @@ def query_delight_ra_dec_get(ra, dec,host=False):  # noqa: E501
         return {"ra" : dclient.df.ra_delight[0], "dec" : dclient.df.dec_delight[0], "hostsize" :  dclient.df.hostsize[0]} 
     else:
         return {"ra" : dclient.df.ra_delight[0], "dec" : dclient.df.dec_delight[0]} 
+
 
