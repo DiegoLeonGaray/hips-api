@@ -90,7 +90,7 @@ Recovers multiple sets of multiresolution images that DELIGHT requires, using co
     If you have a file on your machine that meets the requirements, let's say "test.csv", then the call would be like this:
 
     ```bash
-    http://localhost:8080/query_multiresolution?ra=256.41718016&dec=30.8054594
+    http://localhost:8080/query_objects?filename=%2Ftest.csv
     ```
 
 
@@ -105,7 +105,7 @@ Recovers multiple sets of multiresolution images that DELIGHT requires, using co
 
 #### GET
 
-- DESCRIPTION:
+- DESCRIPTION: By giving the alert coordinates, the location of the searched host is predicted, using the DELIGHT algorithm.
 
 
 - PARAMETERS:
@@ -114,6 +114,19 @@ Recovers multiple sets of multiresolution images that DELIGHT requires, using co
     2) dec: Required declination. (MIN=0, MAX=90)
 
     3) host (optional): Do you want the host size prediction?
+
+- EXAMPLE:
+    1) URL:
+    ```bash
+    http://localhost:8080/query_delight?ra=256.41718016666664&dec=30.805459466666665
+    ```
+
+    2) CURL:
+    ```bash
+    curl -X 'GET' \
+  'http://localhost:8080/query_delight?ra=256.41718016666664&dec=30.805459466666665' \
+  -H 'accept: application/json'
+    ```
 
 
 
