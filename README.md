@@ -1,6 +1,6 @@
 # hips-api
 
-Fast generation of multi-resolution astronomical images for the AlERCE proyect. 
+Fast generation of multi-resolution astronomical images for the ALeRCE proyect. 
 
 Generation of images required by the DELIGHT algorithm using a local HiPS server.
 
